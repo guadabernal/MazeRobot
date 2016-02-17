@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 //#include "Queue.h"
 //
 //int pinEncRightA = 6;
@@ -185,12 +187,12 @@ int pinEncLeftA = 4;
 int pinEncLeftB = 5;
 int pinEncRightA = 6;
 int pinEncRightB = 7;
-int pinMotRightPWM = 11; // or 8
-int pinMotRightFwd = 13; 
+int pinMotRightPWM = 13; // or 8
+int pinMotRightFwd = 11; 
 int pinMotRightBck = 12; 
-int pinMotLeftPWM = 8; // or 11
-int pinMotLeftFwd = 10;
-int pinMotLeftBck = 9;
+int pinMotLeftPWM = 8; // or 13
+int pinMotLeftFwd = 9;
+int pinMotLeftBck = 10;
 
 
 float EncR = 0, EncL = 0; // Encoder counts
@@ -241,18 +243,20 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(pinEncRightA), RightAR, RISING);
   attachInterrupt(digitalPinToInterrupt(pinEncRightB), RightBR, RISING);
   Serial.begin(57600);
+  Serial1.begin(57600);
 }
 
 void loop() {
-  Serial.print(EncR);
-  Serial.print("  ");
-  Serial.print(EncL);
-  Serial.println();
-  setThrottle(250, 250);
-
-  delay(2000);
-  setThrottle(0, 0);
-  delay(4000);
+  int n = Serial1.available();
+  if ( n > 4 ) {
+    int16_t v[2]; //-128..127
+    Serial1.readBytes((char*)v, 4);
+    setThrottle(v[0], v[1]);
+    Serial.print(n); Serial.print(" ");
+    Serial.print(v[0]); Serial.print(" ");
+    Serial.println(v[1]);
+  }
+  delay(5);
 }
 
 

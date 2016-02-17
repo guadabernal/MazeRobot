@@ -13,16 +13,219 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="_core">
+      <UniqueIdentifier>{d6f55360-b0e4-4cde-997c-a950605eb4c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_core\avr">
+      <UniqueIdentifier>{0f12ba5a-7c18-4be6-aba8-fc005b73d2e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_core\USB">
+      <UniqueIdentifier>{7e4f1aa7-fd99-4a57-80bd-86f221646523}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_libraries">
+      <UniqueIdentifier>{2b451cfc-098f-4a33-9f14-3348742cbbce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="MotorTest.ino" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Visual Micro\.MotorTest.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Queue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="__vm\.MotorTest.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Arduino.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\binary.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Client.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\HardwareSerial.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\IPAddress.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\itoa.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Print.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Printable.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Reset.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\RingBuffer.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Server.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Stream.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\syscalls.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Tone.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\UARTClass.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Udp.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\USARTClass.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\WCharacter.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\WInterrupts.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring_analog.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring_constants.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring_digital.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring_private.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring_pulse.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring_shift.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\WMath.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\WString.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\avr\dtostrf.h">
+      <Filter>_core\avr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\avr\interrupt.h">
+      <Filter>_core\avr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\avr\pgmspace.h">
+      <Filter>_core\avr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\USB\USBAPI.h">
+      <Filter>_core\USB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\USB\USBCore.h">
+      <Filter>_core\USB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\USB\USBDesc.h">
+      <Filter>_core\USB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\variants\arduino_due_x\pins_arduino.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\variants\arduino_due_x\variant.h">
+      <Filter>_core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\abi.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\cortex_handlers.c">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\hooks.c">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\iar_calls_sam3.c">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\IPAddress.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\itoa.c">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\main.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\new.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Print.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Reset.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\RingBuffer.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\Stream.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\syscalls_sam3.c">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\UARTClass.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\USARTClass.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\WInterrupts.c">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring.c">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring_analog.c">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring_digital.c">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring_pulse.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\wiring_shift.c">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\WMath.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\WString.cpp">
+      <Filter>_core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\avr\dtostrf.c">
+      <Filter>_core\avr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\USB\CDC.cpp">
+      <Filter>_core\USB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\USB\HID.cpp">
+      <Filter>_core\USB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\ajbernal\AppData\Local\arduino15\packages\arduino\hardware\sam\1.6.4\cores\arduino\USB\USBCore.cpp">
+      <Filter>_core\USB</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
