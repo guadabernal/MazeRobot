@@ -6,3 +6,5 @@
 *.pdb
 *.ilk
 *.idb
+*.dll
+*.nn

@@ -1,3 +1,4 @@
+#if 0
 #include <windows.h>
 #include <stdint.h>
 #include <iostream>
@@ -7,6 +8,8 @@
 #include "utils.h"
 #include "SerialPort.h"
 #include "opencv2/opencv.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#define SERIAL 0
 
 using namespace cv;
 
@@ -51,19 +54,35 @@ void moveRobot(LARGE_INTEGER t0, LARGE_INTEGER frequency, const Mat &frame, std:
 }
 
 
-void playFile(const std::string& Filename, Mat &frame) {
+void moveRobot(float d) {
+  int16_t v[2] = { 120, 120 };
+  if (d > 0)
+    v[1] *= (1-d);
+  else
+    v[0] *= (1-fabs(d));
+
+
+  if (d < -1) {
+    v[0] = 0;
+    v[1] = 0;
+  }
+  printf("Left = %d  Right = %d d=%f\n", v[0], v[1], d);
+  setThrottle(v);
+}
+
+void playFile(const std::string& Filename) {
   std::ifstream infile("samples.nn", std::ifstream::binary);
   int rows, cols, channels;
-  infile.read(reinterpret_cast<char*>(&rows), sizeof(int));
   infile.read(reinterpret_cast<char*>(&cols), sizeof(int));
+  infile.read(reinterpret_cast<char*>(&rows), sizeof(int));
   infile.read(reinterpret_cast<char*>(&channels), sizeof(int));
   int size = rows * cols * channels;
   
   printf("Rows = %d Cols = %d Channels = %d\n", rows, cols, channels);
 
-  //Mat frame(rows, cols, CV_8UC3);
+  Mat frame(rows, cols, CV_8UC1);
   namedWindow("Original", 1); 
-  
+ 
   float t0 = 2000;
   while (!infile.eof()) {
     int16_t v[2];
@@ -76,28 +95,105 @@ void playFile(const std::string& Filename, Mat &frame) {
     printf("dt = %f t1=%f v0=%d v1=%d\n",t1 - t0, t1, v[0], v[1]);
 
     infile.read((char*)frame.data, size);
+
     imshow("Original", frame);
-    Sleep(t1 - t0);
+    if (waitKey(t1 - t0) >= 0) break;
+    //Sleep(t1 - t0);
     t0 = t1;
   }
 
 }
 
+cv::Point getCenter(Mat& mat) {
+  Moments m = moments(mat, &moments);
+  cv::Point center(m.m10 / m.m00, m.m01 / m.m00);
+  return center;
+}
+
 
 int main(int, char**)
 {
+#if 0
+  playFile("samples.nn");
+  return 0;
+#endif
+
+#if 0
+
   VideoCapture cap; // open the default camera
-  const std::string videoStreamAddress = "http://10.0.0.5:8080/video?x.mjpeg";
+  const std::string videoStreamAddress = "http://10.0.0.4:8080/video?x.mjpeg";
   if (!cap.open(videoStreamAddress)) {
+    cap.release();
     std::cout << "Error opening video stream or file" << std::endl;
     return -1;
   }
+#if SERIAL
+  serial.connect("\\\\.\\COM11");
+  if (!serial.IsConnected()) {
+    std::cout << "Error Connecting bluethoot" << std::endl;
+    return -1;
+  }
+#endif
+
+  int iLowH = 70;
+  int iHighH = 144;
+
+  int iLowS = 0;
+  int iHighS = 255;
+
+  int iLowV = 75;
+  int iHighV = 255;
+
+  namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+  //Create trackbars in "Control" window
+  cvCreateTrackbar("LowH", "Control", &iLowH, 179); //Hue (0 - 179)
+  cvCreateTrackbar("HighH", "Control", &iHighH, 179);
+
+  cvCreateTrackbar("LowS", "Control", &iLowS, 255); //Saturation (0 - 255)
+  cvCreateTrackbar("HighS", "Control", &iHighS, 255);
+
+  cvCreateTrackbar("LowV", "Control", &iLowV, 255); //Value (0 - 255)
+  cvCreateTrackbar("HighV", "Control", &iHighV, 255);
 
   Mat frame;
-  cap >> frame;
 
-  playFile("samples.nn", frame);
-  return 0;
+  for (int i = 0; i < 20; ++i) {
+    cap >> frame;
+  }
+
+  cap >> frame;
+  while (true) {
+    cap >> frame;
+    Mat hsv_image;
+    cvtColor(frame, hsv_image, COLOR_BGR2HSV);
+    //erode(hsv_image, hsv_image, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+    //dilate(hsv_image, hsv_image, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+    //dilate(hsv_image, hsv_image, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+    //erode(hsv_image, hsv_image, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+    Mat hue_range;
+    inRange(hsv_image, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), hue_range); //Threshold the image
+    GaussianBlur(hue_range, hue_range, Size(9, 9), 2, 2);
+    threshold(hue_range, hue_range, 100, 255, THRESH_BINARY);
+
+    Mat l0 = hue_range(Range(hue_range.rows-200, hue_range.rows - 100), Range(0, hue_range.cols));
+    Point p = getCenter(l0);
+    p.y += hue_range.rows - 100;
+    circle(frame, p, 10, Scalar(255, 255, 255));
+
+#if SERIAL
+    moveRobot(2*(p.x / 480.0f - 0.5f));
+#endif
+
+    imshow("hue", hue_range);
+    imshow("lower", l0);
+    imshow("Original", frame);
+    if (waitKey(10) >= 0) break;
+  }
+  cap.release();
+
+#endif
+
 #if 0
   std::ofstream outfile("samples.nn", std::ofstream::binary);
 
@@ -124,7 +220,7 @@ int main(int, char**)
   outfile.write(reinterpret_cast<const char*>(&rows), sizeof(int));
   outfile.write(reinterpret_cast<const char*>(&channels), sizeof(int));
 
-  for (int i = 0; i < 100; ++i) {
+  for (int i = 0; i < 20; ++i) {
     cap >> frame;
   }
 
@@ -145,15 +241,166 @@ int main(int, char**)
 
   outfile.close();
 #endif
-  return 0;
+
+
+#endif
+
+#include "opencv2/opencv.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "SerialPort.h"
+#include <stdint.h>
+#include <vector>
+#include <iostream>
+
+SerialPort serial;
+
+void setThrottle(int16_t *v) {
+  serial.WriteData((char*)v, 4);
 }
 
+void setThrottle(int16_t l, int16_t r) {
+  int16_t v[2] = { l, r };
+  serial.WriteData((char*)v, 4);
+}
 
+void setArray(int16_t *v, int16_t left, int16_t right) {
+  v[0] = left;
+  v[1] = right;
+}
+
+void moveRobot(float d) {
+  int16_t v[2] = { 120, 120 };
+  if (d > 0)
+    v[1] *= (1 - d);
+  else
+    v[0] *= (1 - fabs(d));
+
+  if (d < -1) {
+    v[0] = 0;
+    v[1] = 0;
+  }
+  printf("Left = %d  Right = %d d=%f\n", v[0], v[1], d);
+  setThrottle(v);
+}
+void stopRobot() {
+  setThrottle(0);
+}
+
+cv::Point2f getMassCenter(cv::Mat& mat, cv::Rect& r) {
+  cv::Moments m = cv::moments(mat(r));
+  cv::Point2f center(m.m10 / m.m00, m.m01 / m.m00);
+  center.x += r.x;
+  center.y += r.y;
+  return center;
+}
+
+#define SERIAL 1
+int main() {
+  using namespace cv;
+  cv::VideoCapture cap; // open camera
+  if (!cap.open("http://10.0.0.4:8080/video?x.mjpeg")) {
+    cap.release();
+    std::cout << "Error opening video stream or file" << std::endl;
+    exit(-1);
+  }
+#if SERIAL
+  serial.connect("\\\\.\\COM11");
+  if (!serial.IsConnected()) {
+    std::cout << "Error Connecting bluethoot" << std::endl;
+    return -1;
+  }
+#endif
+
+  int iLowH = 85;
+  int iHighH = 132;
+
+  int iLowS = 12;
+  int iHighS = 255;
+
+  int iLowV = 0;
+  int iHighV = 255;
+
+  namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+  //Create trackbars in "Control" window
+  cvCreateTrackbar("LowH", "Control", &iLowH, 179); //Hue (0 - 179)
+  cvCreateTrackbar("HighH", "Control", &iHighH, 179);
+
+  cvCreateTrackbar("LowS", "Control", &iLowS, 255); //Saturation (0 - 255)
+  cvCreateTrackbar("HighS", "Control", &iHighS, 255);
+
+  cvCreateTrackbar("LowV", "Control", &iLowV, 255); //Value (0 - 255)
+  cvCreateTrackbar("HighV", "Control", &iHighV, 255);
+
+
+  namedWindow("Camera");
+  bool notDone = true;
+  Matx33f H = {243.4f, -82.8f,   120.0f,  -0.0280f, 69.6f,
+               234.0f, -0.0044f, -0.337f, 245.0f};
+  Mat frame, birdEye, hsv_image;
+  while (notDone) {
+    cap >> frame;
+
+   
+    warpPerspective(frame, birdEye, H, frame.size(), CV_INTER_LINEAR |
+                                                         CV_WARP_INVERSE_MAP |
+                                                         CV_WARP_FILL_OUTLIERS);
+
+    cvtColor(birdEye, hsv_image, COLOR_BGR2HSV); // conver to HSV
+
+    Mat hue_range;
+    inRange(hsv_image, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), hue_range);
+    GaussianBlur(hue_range, hue_range, Size(9, 9), 2, 2);
+    threshold(hue_range, hue_range, 100, 255, THRESH_BINARY);
+    hue_range = hue_range(Rect(0, 0, hue_range.cols, hue_range.rows - 105));
+
+    Point2f p = getMassCenter(hue_range, Rect(0, hue_range.rows - 200, hue_range.cols, 100));
+    
+    Mat hueColor;
+    cvtColor(hue_range, hueColor, COLOR_GRAY2BGR); 
+    std::cout << p.x << " " << p.y << std::endl;
+    if (p.x >= 0 && p.y >= 0) {
+      circle(hueColor, p, 9, Scalar(0, 0, 255), 3);
+#if SERIAL
+      float d = (p.x - hue_range.cols / 2) / (hue_range.cols / 2) *2;
+      int16_t v[2] = { 120, 120 };
+      if (d > 0)
+        v[1] *= (1 - d);
+      else
+        v[0] *= (1 - fabs(d));
+
+      if (d < -1) {
+        v[0] = 0;
+        v[1] = 0;
+      }
+      setThrottle(v[0], v[1]);
+#endif
+    } 
+    else 
+      setThrottle(0, 0);
+
+    cv::imshow("HUEColor", hueColor);
+    //cv::imshow("Birds_Eye", birdEye);
+    cv::imshow("Camera", frame);
+    int key = cv::waitKey(20);
+    switch (key) {
+    case 27:
+      notDone = false;
+      break;
+    }
+  }
+  cap.release();
+}
 
 //  Gamepad gpad(0);
-//gpad.update();
-//float lx = scaleInput(gpad.getStickLeftX());
-//float ly = scaleInput(gpad.getStickLeftY());
-//float rx = scaleInput(gpad.getStickRightX());
-//float ry = scaleInput(gpad.getStickRightY());
-//printf("lx = %f ly =%f rx = %f ry = %f\n", lx, ly, rx, ry);
+// gpad.update();
+// float lx = scaleInput(gpad.getStickLeftX());
+// float ly = scaleInput(gpad.getStickLeftY());
+// float rx = scaleInput(gpad.getStickRightX());
+// float ry = scaleInput(gpad.getStickRightY());
+// printf("lx = %f ly =%f rx = %f ry = %f\n", lx, ly, rx, ry);
+
+// Zenfone2
+// Homography Matrix :
+//[243.40329, -82.878532, 120;
+//-0.028021142, 69.600586, 234;
+//-0.0043745581, -0.33711663, 245]

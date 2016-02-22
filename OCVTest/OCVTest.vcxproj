@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="gamepad.h" />
+    <ClInclude Include="homography.h" />
     <ClInclude Include="SerialPort.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
