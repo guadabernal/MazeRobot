@@ -245,6 +245,8 @@ int main(int, char**)
 
 #endif
 
+#ifdef LINEFOLLOW
+
 #include "opencv2/opencv.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "SerialPort.h"
@@ -299,7 +301,7 @@ cv::Point2f getMassCenter(cv::Mat& mat, cv::Rect& r, bool &found) {
 
 
 #define SERIAL 0
-int main() {
+int main1() {
   using namespace cv;
   cv::VideoCapture cap; // open camera
   if (!cap.open("http://10.0.0.4:8080/video?x.mjpeg")) {
@@ -400,6 +402,72 @@ int main() {
   }
   cap.release();
 }
+
+
+#endif //LINEFOLLOW
+
+
+
+
+#include <windows.h>
+#include "gamepad.h"
+#include <stdint.h>
+#include "utils.h"
+#include "SerialPort.h"
+#include "opencv2/opencv.hpp"
+#include "opencv2/highgui/highgui.hpp"
+
+int main() {
+  using namespace cv;
+  cv::VideoCapture cap; // open camera
+  if (!cap.open("http://10.0.0.4:8080/video?x.mjpeg")) {
+    cap.release();
+    std::cout << "Error opening video stream or file" << std::endl;
+    exit(-1);
+  }
+
+  Gamepad gpad(0);
+  SerialPort serial;
+  Sleep(1000);
+  serial.connect("\\\\.\\COM11");
+  Matx33f H = { 243.4f, -82.8f, 120.0f, -0.0280f, 69.6f,
+    234.0f, -0.0044f, -0.337f, 246.0f };
+  Mat frame, birdEye;
+  bool isDone = false;
+  while (!isDone) {
+    cap >> frame; // capture frame from camera
+    warpPerspective(frame, birdEye, H, frame.size(), CV_INTER_LINEAR |
+      CV_WARP_INVERSE_MAP |
+      CV_WARP_FILL_OUTLIERS);
+
+    birdEye = birdEye(Rect(0, 0, birdEye.cols, birdEye.rows - 105));
+    line(birdEye, Point(birdEye.cols / 2, 0), Point(birdEye.cols / 2, birdEye.rows), Scalar(0, 0, 0), 1);
+
+    gpad.update();
+    float lx = scaleInput(gpad.getStickLeftX());
+    float ly = scaleInput(gpad.getStickLeftY());
+    float rx = scaleInput(gpad.getStickRightX());
+    float ry = scaleInput(gpad.getStickRightY());
+    printf("lx = %f ly =%f rx = %f ry = %f\n", lx, ly, rx, ry);
+    int16_t v[2];
+    v[0] = ly * 180;
+    v[1] = ry * 180;
+    int ret = serial.WriteData((char*)v, 4); // send data to arduino 
+
+    cv::imshow("Camera", frame);
+    cv::imshow("Bird Eye View", birdEye);
+
+    int key = cv::waitKey(20);
+    switch (key) {
+    case 27:
+      isDone = true;
+      break;
+    }
+  }
+
+}
+
+
 
 
 
