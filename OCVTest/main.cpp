@@ -286,15 +286,19 @@ void stopRobot() {
   setThrottle(0);
 }
 
-cv::Point2f getMassCenter(cv::Mat& mat, cv::Rect& r) {
+cv::Point2f getMassCenter(cv::Mat& mat, cv::Rect& r, bool &found) {
   cv::Moments m = cv::moments(mat(r));
   cv::Point2f center(m.m10 / m.m00, m.m01 / m.m00);
   center.x += r.x;
   center.y += r.y;
+  found = true;
+  if (m.m00 == 0 || m.m00 == 0)
+    found = false;
   return center;
 }
 
-#define SERIAL 1
+
+#define SERIAL 0
 int main() {
   using namespace cv;
   cv::VideoCapture cap; // open camera
@@ -331,55 +335,61 @@ int main() {
   cvCreateTrackbar("LowV", "Control", &iLowV, 255); //Value (0 - 255)
   cvCreateTrackbar("HighV", "Control", &iHighV, 255);
 
-
+  RNG rng(12345);
   namedWindow("Camera");
   bool notDone = true;
   Matx33f H = {243.4f, -82.8f,   120.0f,  -0.0280f, 69.6f,
-               234.0f, -0.0044f, -0.337f, 245.0f};
+               234.0f, -0.0044f, -0.337f, 246.0f};
   Mat frame, birdEye, hsv_image;
   while (notDone) {
     cap >> frame;
-
-   
     warpPerspective(frame, birdEye, H, frame.size(), CV_INTER_LINEAR |
-                                                         CV_WARP_INVERSE_MAP |
-                                                         CV_WARP_FILL_OUTLIERS);
+      CV_WARP_INVERSE_MAP |
+      CV_WARP_FILL_OUTLIERS);
 
+    birdEye = birdEye(Rect(0, 0, birdEye.cols, birdEye.rows - 105));
+    line(birdEye, Point(birdEye.cols / 2, 0), Point(birdEye.cols / 2, birdEye.rows), Scalar(0, 0, 0), 1);
     cvtColor(birdEye, hsv_image, COLOR_BGR2HSV); // conver to HSV
+
 
     Mat hue_range;
     inRange(hsv_image, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), hue_range);
     GaussianBlur(hue_range, hue_range, Size(9, 9), 2, 2);
     threshold(hue_range, hue_range, 100, 255, THRESH_BINARY);
-    hue_range = hue_range(Rect(0, 0, hue_range.cols, hue_range.rows - 105));
-
-    Point2f p = getMassCenter(hue_range, Rect(0, hue_range.rows - 200, hue_range.cols, 100));
-    
-    Mat hueColor;
-    cvtColor(hue_range, hueColor, COLOR_GRAY2BGR); 
-    std::cout << p.x << " " << p.y << std::endl;
-    if (p.x >= 0 && p.y >= 0) {
-      circle(hueColor, p, 9, Scalar(0, 0, 255), 3);
-#if SERIAL
-      float d = (p.x - hue_range.cols / 2) / (hue_range.cols / 2) *2;
-      int16_t v[2] = { 120, 120 };
-      if (d > 0)
-        v[1] *= (1 - d);
-      else
-        v[0] *= (1 - fabs(d));
-
-      if (d < -1) {
-        v[0] = 0;
-        v[1] = 0;
+    // hue_range = hue_range(Rect(0, 0, hue_range.cols, hue_range.rows - 105));
+    erode(hue_range, hue_range, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)), Point(-1, -1), 5);
+    std::vector<Point2f> points;
+    points.push_back(Point2f(0, 0));
+    float k = 1.4f;
+    for (int i = 0; i < 5; ++i) {
+      bool found = false;
+      Point p = getMassCenter(hue_range, Rect(0, hue_range.rows - 50 * (i + 1), hue_range.cols, 50), found);
+      line(birdEye, Point(0, birdEye.rows - 50 * (i + 1)), Point(birdEye.cols, birdEye.rows - 50 * (i + 1)), Scalar(0, 0, 0), 1);
+      if (found) {
+        circle(birdEye, p, 9, Scalar(0, 0, 255), 3);
+        p.x = (p.x - hue_range.cols / 2) * k;
+        p.y = (75 + hue_range.rows - p.y) * k;
+        points.push_back(p);
       }
+      else break;
+    }
+    if (!points.empty()) {
+      int ip = 0;
+      for (int i = 1; i < points.size(); ++i){
+        float theta = atan2(points[i].x - points[i-1].x, points[i].y - points[i-1].y);
+        std::cout << fabs(theta / 3.1415*180) << " ";
+        if (fabs(theta / 3.1415 * 180) < 20) ip = i;
+      }
+      std::cout << "\ngoto point " << ip << "\n";
+    }
+
+#if SERIAL
       setThrottle(v[0], v[1]);
 #endif
-    } 
-    else 
-      setThrottle(0, 0);
+      
 
-    cv::imshow("HUEColor", hueColor);
-    //cv::imshow("Birds_Eye", birdEye);
+    imshow("DR", hue_range);
+    cv::imshow("Birds_Eye", birdEye);
     cv::imshow("Camera", frame);
     int key = cv::waitKey(20);
     switch (key) {
@@ -390,6 +400,8 @@ int main() {
   }
   cap.release();
 }
+
+
 
 //  Gamepad gpad(0);
 // gpad.update();

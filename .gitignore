@@ -8,3 +8,5 @@
 *.idb
 *.dll
 *.nn
+Debug
+__vm

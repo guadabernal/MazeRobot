@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <cmath>
 
 //#include "Queue.h"
 //
@@ -183,10 +184,12 @@
 // //setThrottle(250, -250);
 //}
 
-int pinEncLeftA = 4;
-int pinEncLeftB = 5;
-int pinEncRightA = 6;
-int pinEncRightB = 7;
+#define sign(a) (((a) < 0) ? -1 : ((a) > 0))
+
+int pinEncLeftA = 6;
+int pinEncLeftB = 7;
+int pinEncRightA = 4;
+int pinEncRightB = 5;
 int pinMotRightPWM = 13; // or 8
 int pinMotRightFwd = 11; 
 int pinMotRightBck = 12; 
@@ -194,9 +197,7 @@ int pinMotLeftPWM = 8; // or 13
 int pinMotLeftFwd = 9;
 int pinMotLeftBck = 10;
 
-
 float EncR = 0, EncL = 0; // Encoder counts
-
 
 void LeftAR() { if (digitalRead(pinEncLeftB) == LOW)  EncL--; else EncL++; }
 void LeftBR() { if (digitalRead(pinEncLeftA) == HIGH)  EncL--; else EncL++; }
@@ -246,18 +247,116 @@ void setup() {
   Serial1.begin(57600);
 }
 
-void loop() {
+void resetCounts() {
+  EncR = 0;
+  EncL = 0;
+}
+
+void moveToCount(int power, int CL, int CR) {
+  int sl = sign(CL);
+  int sr = sign(CR);
+  int DD = (power - 80) * 0.6 + 20;
+  int TT = (power - 80) * 0.26 + 24;
+  setThrottle(power * sl, power * sr);
+  
+  while (abs(EncR) < abs(CL) - DD || abs(EncL) < abs(CR) - DD) {
+    float De = (abs(EncL) - abs(EncR));
+    float DPR = abs(EncR) - (abs(CL) - DD);
+    float DPL = abs(EncL) - (abs(CR) - DD);
+    float DP = sqrt(DPR * DPR + DPL * DPL);
+    float kp = DP * 0.005;
+ //   if (DP < 300) kp = 0;
+    if (kp > 1)  kp = 1;
+    if (De != 0) {
+      float kd = 1 / (fabs(De) * 0.2);
+      if (kd > 1) kd = 1;
+      if (De > 0)
+        setThrottle(power * sl * kd * kp, power * sr * kp);
+      else
+        setThrottle(power * sl * kp, power * sr * kd * kp);
+    }
+    delay(5);
+  }
+  setThrottle(-80 * sl, -80 * sr);
+  delay(TT);
+  setThrottle(0, 0);
+  float De = (abs(EncL) - abs(EncR));
+  Serial.print(EncL);
+  Serial.print(" ");
+  Serial.print(EncR);
+  Serial.print(" - ");
+  Serial.print(CL);
+  Serial.print(" ");
+  Serial.print(CR);
+  Serial.print(" - ");
+  Serial.print(abs(EncR) - abs(CL));
+  Serial.print(" ");
+  Serial.print(abs(EncL) - abs(CR));
+  Serial.print(" - ");
+  Serial.println(De);
+  delay(300);
+
+
+}
+
+const float MIN_ANGLE = 5 * M_PI / 180.0f;
+const float L = 205;  // Diameter of the robot
+const float dw = 90; // Diameter of the wheel
+const int COUNTS_PER_REV = 1600;
+
+void moveToPos(int power, float dx, float dy) {
+  float alpha = atan2(dx, dy);
+  if (fabs(alpha) < MIN_ANGLE) {
+    float d = sqrt(dx * dx + dy * dy);
+    float c = d / (M_PI * dw) * COUNTS_PER_REV;
+    resetCounts();
+    moveToCount(power, c, c);
+  }
+  else {
+    float dr = fabs(alpha) * L / 2;
+    float cr = dr / ( dw * M_PI ) * COUNTS_PER_REV;
+    float lcr = -cr;
+    float rcr = cr;
+    if (alpha > 0){
+      lcr = cr;
+      rcr = -cr;
+    }
+    resetCounts();
+    moveToCount(power, lcr, rcr);
+
+    float d = sqrt(dx * dx + dy * dy);
+    float c = d / (M_PI * 90) * COUNTS_PER_REV;
+    resetCounts();
+    moveToCount(power, c, c);
+  }
+
+
+}
+
+
+void loop1() {
   int n = Serial1.available();
-  if ( n > 4 ) {
-    int16_t v[2]; //-128..127
-    Serial1.readBytes((char*)v, 4);
-    setThrottle(v[0], v[1]);
-    Serial.print(n); Serial.print(" ");
-    Serial.print(v[0]); Serial.print(" ");
-    Serial.println(v[1]);
+  if (n > 5) {
+    // Power: 2 byte 0..255
+    // Dx: 2 bytes in mm
+    // Dy: 2 bytes in mm
+    int16_t v[3];
+    Serial1.readBytes((char*)v, 6);
+    moveToPos(v[0], v[1], v[2]);
   }
   delay(5);
 }
 
 
+void loop() {
+  int n = Serial1.available();
+  if (n > 4) {
+    int16_t v[2]; //-128..127
+    Serial1.readBytes((char*)v, 4);
+    setThrottle(v[0], v[1]);
+  }
+  delay(2);
+}
 
+
+//
