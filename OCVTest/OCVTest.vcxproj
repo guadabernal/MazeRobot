@@ -151,8 +151,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="convertString.h" />
     <ClInclude Include="gamepad.h" />
     <ClInclude Include="homography.h" />
+    <ClInclude Include="membuffer.h" />
     <ClInclude Include="SerialPort.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

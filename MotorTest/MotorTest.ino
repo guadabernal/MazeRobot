@@ -347,13 +347,18 @@ void loop1() {
   delay(5);
 }
 
-
+unsigned long t0 = 0;
 void loop() {
+  unsigned long t1 = millis();
   int n = Serial1.available();
   if (n > 4) {
     int16_t v[2]; //-128..127
     Serial1.readBytes((char*)v, 4);
     setThrottle(v[0], v[1]);
+    t0 = millis();
+  }
+  if (t1 - t0 > 100)  {
+    setThrottle(0, 0);
   }
   delay(2);
 }

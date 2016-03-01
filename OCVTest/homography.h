@@ -34,11 +34,11 @@ void onMouseSelectPoints(int event, int x, int y, int a, void *p) {
   }
 }
 
-void calibrateHomography() {
+void calibrateHomography(std::string Camera) {
   using namespace cv;
   // open camera
   cv::VideoCapture cap;
-  if (!cap.open("http://10.0.0.4:8080/video?x.mjpeg")) { // change to 0 when using webcam
+  if (!cap.open(Camera.c_str())) { // change to 0 when using webcam
     cap.release();
     std::cout << "Error opening video stream or file" << std::endl;
     exit(-1);
@@ -64,6 +64,7 @@ void calibrateHomography() {
   Matx33f H;
   while (notDone) {
     cap >> frame;
+    resize(frame, frame, Size(480, 640));
     for (int i = 0; i < imgPoints.size(); ++i)
       circle(frame, imgPoints[i], 9, pointColors[i], 3);
     line(frame, Point2f(frame.cols / 2, 0), Point2f(frame.cols / 2, frame.rows), Scalar(0, 0, 0), 2);
@@ -75,6 +76,7 @@ void calibrateHomography() {
       warpPerspective(frame, birdEye, H, frame.size(),
         CV_INTER_LINEAR | CV_WARP_INVERSE_MAP |
         CV_WARP_FILL_OUTLIERS);
+      line(birdEye, Point2f(birdEye.cols / 2, 0), Point2f(birdEye.cols / 2, birdEye.rows), Scalar(0, 0, 255), 1);
       cv::imshow("Birds_Eye", birdEye);
     }
 

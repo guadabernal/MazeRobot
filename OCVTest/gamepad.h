@@ -37,6 +37,9 @@ public:
   bool leftButtonPress(){
     return (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER);
   }
+  bool rightButtonPress(){
+    return (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER);
+  }
   
 private:
   XINPUT_STATE state;

@@ -27,6 +27,12 @@
     <ClInclude Include="homography.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="membuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="convertString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
